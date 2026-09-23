@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0A0D14" />
+<title>你的隐藏才能 · 暗房显影</title>
+<style>
+:root{
+  --ink:#0A0D14;
+  --ink2:#111621;
+  --ink3:#1A2130;
+  --paper:#F2EFE7;
+  --dim:rgba(242,239,231,.60);
+  --faint:rgba(242,239,231,.33);
+  --amber:#EFAA63;
+  --amber-soft:#FFD5A6;
+  --halide:#7FB8C9;
+  --line:rgba(242,239,231,.10);
+  --accent:#EFAA63;
+  --glow:rgba(239,170,99,.40);
+  --serif:"Songti SC","Source Han Serif SC","Noto Serif SC","STSong","SimSun",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  min-height:100dvh;
+  font-family:var(--sans);
+  color:var(--paper);
+  background:
+    radial-gradient(115% 72% at 84% -10%, rgba(239,170,99,.20), rgba(239,170,99,0) 62%),
+    radial-gradient(95% 62% at 4% 110%, rgba(127,184,201,.14), rgba(127,184,201,0) 60%),
+    var(--ink);
+  overflow-x:hidden;
+}
+.grain{
+  position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.30;mix-blend-mode:overlay;
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/></filter><rect width="140" height="140" filter="url(%23n)"/></svg>');
+}
+.vignette{position:fixed;inset:0;z-index:98;pointer-events:none;
+  background:radial-gradient(120% 80% at 50% 40%, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 100%);}
+
+.app{position:relative;z-index:2;width:100%;max-width:440px;margin:0 auto;padding:0 22px 44px;min-height:100dvh;display:flex;flex-direction:column}
+.screen{display:none;flex:1;flex-direction:column;padding-top:30px}
+.screen.on{display:flex;animation:enter .55s cubic-bezier(.2,.8,.28,1) both}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+
+/* ---------- shared bits ---------- */
+.eyebrow{
+  font-size:10px;letter-spacing:.30em;text-transform:uppercase;color:var(--amber);
+  display:flex;align-items:center;gap:9px;margin-bottom:16px;
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(239,170,99,.55),rgba(239,170,99,0))}
+.rule{height:1px;background:linear-gradient(90deg,rgba(242,239,231,.22),rgba(242,239,231,0));margin:22px 0}
+
+/* ---------- home ---------- */
+#s-home{justify-content:center;padding-top:0}
+.plate{
+  position:relative;border:1px solid rgba(239,170,99,.28);border-radius:4px;
+  background:linear-gradient(180deg,rgba(239,170,99,.05),rgba(10,13,20,.6));
+  padding:20px 18px;margin-bottom:30px;overflow:hidden;
+}
+.plate .perf{position:absolute;left:0;right:0;height:9px;
+  background-image:radial-gradient(circle at 6px 50%, rgba(239,170,99,.5) 0 2.2px, transparent 2.4px);
+  background-size:16px 9px;}
+.plate .perf.t{top:0}.plate .perf.b{bottom:0}
+.plate-in{position:relative;border:1px dashed rgba(239,170,99,.20);border-radius:2px;padding:30px 16px;text-align:center}
+.safelight{width:92px;height:92px;margin:0 auto 20px;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, rgba(255,213,166,.85), rgba(239,170,99,.28) 45%, rgba(239,170,99,0) 72%);
+  animation:breathe 4.2s ease-in-out infinite;}
+@keyframes breathe{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.06);opacity:1}}
+.plate-cap{font-size:11px;letter-spacing:.22em;color:var(--faint);line-height:1.9}
+
+h1.title{
+  font-family:var(--serif);font-weight:600;font-size:40px;line-height:1.22;margin:0 0 14px;
+  letter-spacing:.02em;
+}
+.title em{font-style:normal;color:var(--amber)}
+.lede{font-size:14.5px;line-height:1.85;color:var(--dim);margin:0 0 22px}
+.meta{display:flex;gap:0;margin:0 0 34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta div{flex:1;padding:13px 0;text-align:center;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:0}
+.meta b{display:block;font-family:var(--serif);font-size:19px;font-weight:600;color:var(--paper)}
+.meta span{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.14em;color:var(--faint)}
+
+.btn{
+  display:block;width:100%;border:0;border-radius:2px;cursor:pointer;
+  font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:.06em;
+  padding:17px 20px;color:#191308;
+  background:linear-gradient(180deg,var(--amber-soft),var(--amber));
+  box-shadow:0 10px 30px -12px rgba(239,170,99,.75);
+  transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+}
+.btn:active{transform:translateY(2px) scale(.99);box-shadow:0 6px 18px -12px rgba(239,170,99,.6)}
+.btn.ghost{background:transparent;color:var(--dim);border:1px solid rgba(242,239,231,.18);box-shadow:none}
+.btn.ghost:active{background:rgba(242,239,231,.05)}
+.btn-row{display:flex;gap:12px;margin-top:26px}
+.btn-row .btn{flex:1}
+.note{font-size:11.5px;color:var(--faint);text-align:center;margin-top:18px;line-height:1.7}
+
+/* ---------- quiz ---------- */
+.qtop{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.icon-btn{width:34px;height:34px;flex:0 0 34px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(242,239,231,.03);color:var(--dim);font-size:15px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:opacity .2s,color .2s}
+.icon-btn.off{opacity:.25;pointer-events:none}
+.qcount{margin-left:auto;font-family:var(--serif);font-size:13px;letter-spacing:.10em;color:var(--faint)}
+.qcount b{color:var(--amber);font-size:19px;font-weight:600}
+.bar{position:relative;height:3px;background:rgba(242,239,231,.09);overflow:hidden;margin-bottom:34px}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(90deg,rgba(239,170,99,.35),var(--amber));
+  box-shadow:0 0 12px rgba(239,170,99,.6);transition:width .42s cubic-bezier(.2,.8,.28,1)}
+.qbody{animation:slideIn .42s cubic-bezier(.2,.8,.28,1) both}
+.qtag{font-size:10px;letter-spacing:.26em;color:var(--amber);margin-bottom:14px}
+.qtext{font-family:var(--serif);font-size:22px;line-height:1.62;font-weight:600;margin:0 0 28px;letter-spacing:.01em}
+.opts{display:flex;flex-direction:column;gap:11px}
+.opt{
+  position:relative;display:flex;gap:13px;align-items:flex-start;text-align:left;cursor:pointer;
+  padding:16px 16px 16px 15px;border-radius:3px;
+  border:1px solid rgba(242,239,231,.11);
+  background:linear-gradient(180deg,rgba(242,239,231,.045),rgba(242,239,231,.012));
+  color:var(--paper);font-family:var(--sans);font-size:14.5px;line-height:1.65;
+  transition:border-color .22s, background .22s, transform .18s;
+}
+.opt .mk{
+  flex:0 0 22px;height:22px;margin-top:1px;border-radius:2px;
+  border:1px solid rgba(242,239,231,.20);color:var(--faint);
+  font-size:10.5px;font-weight:700;letter-spacing:.04em;
+  display:flex;align-items:center;justify-content:center;transition:all .22s;
+}
+.opt:active{transform:scale(.985)}
+.opt.sel{border-color:var(--amber);background:linear-gradient(180deg,rgba(239,170,99,.16),rgba(239,170,99,.05));
+  box-shadow:inset 0 0 26px -8px rgba(239,170,99,.45)}
+.opt.sel .mk{border-color:var(--amber);background:var(--amber);color:#191308}
+.qfoot{margin-top:auto;padding-top:30px;font-size:11px;color:rgba(242,239,231,.24);text-align:center;letter-spacing:.08em}
+
+/* ---------- developing ---------- */
+#s-dev{justify-content:center;align-items:center;text-align:center;padding-top:0}
+.frame{position:relative;width:196px;height:196px;border:1px solid rgba(239,170,99,.30);overflow:hidden;
+  background:#080B11;box-shadow:0 30px 70px -30px rgba(0,0,0,.9)}
+.frame .img{position:absolute;inset:0;opacity:0;transform:scale(1.15);
+  background:
+    radial-gradient(60% 55% at 50% 42%, rgba(255,213,166,.95), rgba(239,170,99,.45) 40%, rgba(239,170,99,0) 72%),
+    radial-gradient(75% 60% at 22% 88%, rgba(127,184,201,.55), rgba(127,184,201,0) 70%),
+    linear-gradient(180deg,rgba(239,170,99,.10),rgba(10,13,20,.2));
+  animation:develop 1.75s cubic-bezier(.3,.7,.3,1) forwards;}
+@keyframes develop{0%{opacity:0;transform:scale(1.18)}35%{opacity:.35}100%{opacity:1;transform:scale(1)}}
+.frame .scan{position:absolute;left:0;right:0;height:44px;top:-44px;
+  background:linear-gradient(180deg,rgba(255,213,166,0),rgba(255,213,166,.30),rgba(255,213,166,0));
+  animation:scan 1.75s cubic-bezier(.4,0,.5,1) forwards;}
+@keyframes scan{0%{top:-44px}100%{top:200px}}
+.frame .perf{position:absolute;left:0;right:0;height:8px;
+  background-image:radial-gradient(circle at 5px 50%, rgba(239,170,99,.55) 0 2px, transparent 2.2px);
+  background-size:14px 8px;}
+.frame .perf.t{top:0}.frame .perf.b{bottom:0}
+.dev-pct{margin-top:26px;font-family:var(--serif);font-size:34px;font-weight:600;letter-spacing:.02em}
+.dev-pct span{font-size:15px;color:var(--amber);margin-left:2px}
+.dev-step{margin-top:10px;font-size:12px;letter-spacing:.16em;color:var(--faint);height:18px}
+.dev-cap{margin-top:6px;font-size:10px;letter-spacing:.26em;color:rgba(242,239,231,.22)}
+
+/* ---------- result ---------- */
+.r-head{text-align:center;margin-bottom:26px}
+.r-name{font-family:var(--serif);font-size:38px;font-weight:600;line-height:1.2;margin:0 0 10px;
+  letter-spacing:.03em;text-shadow:0 0 34px var(--glow)}
+.r-en{font-size:10px;letter-spacing:.34em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.r-tag{font-family:var(--serif);font-size:15px;line-height:1.7;color:var(--dim);font-style:italic}
+.desc{font-size:14px;line-height:1.95;color:rgba(242,239,231,.78);margin:0 0 4px}
+.trigger{margin:22px 0 4px;padding:14px 16px;border-left:2px solid var(--accent);
+  background:linear-gradient(90deg,rgba(239,170,99,.07),rgba(239,170,99,0));border-radius:0 3px 3px 0}
+.trigger em{display:block;font-style:normal;font-size:10px;letter-spacing:.24em;color:var(--accent);margin-bottom:7px}
+.trigger p{margin:0;font-size:13px;line-height:1.8;color:var(--dim)}
+.ab-title{font-size:10px;letter-spacing:.26em;color:var(--faint);margin:30px 0 16px;display:flex;align-items:center;gap:10px}
+.ab-title::after{content:"";flex:1;height:1px;background:var(--line)}
+.ab{margin-bottom:15px}
+.ab-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.ab-name{font-size:13px;color:rgba(242,239,231,.86)}
+.ab-val{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--accent)}
+.ab-track{height:4px;background:rgba(242,239,231,.08);border-radius:2px;overflow:hidden}
+.ab-fill{height:100%;width:0;border-radius:2px;background:linear-gradient(90deg,rgba(255,213,166,.5),var(--accent));
+  box-shadow:0 0 10px -2px var(--accent);transition:width 1.05s cubic-bezier(.2,.8,.28,1)}
+.kws{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.kw{padding:7px 13px;border:1px solid rgba(242,239,231,.16);border-radius:100px;font-size:12px;color:var(--dim);
+  background:rgba(242,239,231,.03)}
+.clarity{margin-top:24px;display:flex;justify-content:space-between;align-items:center;
+  padding-top:16px;border-top:1px solid var(--line);font-size:11px;letter-spacing:.14em;color:var(--faint)}
+.clarity b{font-family:var(--serif);font-size:17px;color:var(--paper);letter-spacing:0}
+.r-no{margin-top:26px;text-align:center;font-size:10px;letter-spacing:.24em;color:rgba(242,239,231,.20)}
+
+/* ---------- toast & modal ---------- */
+#toast{position:fixed;left:50%;bottom:38px;transform:translate(-50%,20px);z-index:200;
+  background:rgba(18,22,33,.96);border:1px solid rgba(239,170,99,.35);color:var(--paper);
+  padding:12px 20px;border-radius:2px;font-size:13px;opacity:0;pointer-events:none;
+  transition:opacity .28s,transform .28s;backdrop-filter:blur(8px);max-width:84%;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+  background:rgba(5,7,11,.90);backdrop-filter:blur(6px);padding:24px}
+#modal.on{display:flex;animation:enter .3s both}
+.mbox{width:100%;max-width:330px;text-align:center}
+.mbox img{width:100%;display:block;border-radius:3px;border:1px solid rgba(239,170,99,.25);
+  max-height:62vh;object-fit:contain;box-shadow:0 30px 70px -24px rgba(0,0,0,.9)}
+.mhint{font-size:11.5px;color:var(--faint);margin:14px 0 16px;line-height:1.7}
+.mbtns{display:flex;gap:10px}
+.mbtns .btn{padding:13px;font-size:13px}
+@media (min-width:520px){ .app{padding-top:26px} }
+</style>
+</head>
+<body>
+<div class="grain"></div><div class="vignette"></div>
+
+<div class="app">
+
+  <!-- HOME -->
+  <section id="s-home" class="screen on">
+    <div class="plate">
+      <div class="perf t"></div><div class="perf b"></div>
+      <div class="plate-in">
+        <div class="safelight"></div>
+        <div class="plate-cap">LATENT&nbsp;IMAGE<br/>未显影的底片</div>
+      </div>
+    </div>
+    <div class="eyebrow">Hidden Talent · 暗房显影</div>
+    <h1 class="title">你的<em>隐藏</em>才能</h1>
+    <p class="lede">有些才能一直没被认出来，不是因为它不存在，<br/>而是它还没遇到对的显影液。<br/>12 道情境题，把它从底片上洗出来。</p>
+    <div class="meta">
+      <div><b>12</b><span>情境题</span></div>
+      <div><b>2′</b><span>约需时长</span></div>
+      <div><b>6</b><span>种底片</span></div>
+    </div>
+    <button class="btn" id="btnStart">开始显影</button>
+    <p class="note">没有标准答案，凭第一直觉选<br/>答案仅在你的设备上处理</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="s-quiz" class="screen">
+    <div class="qtop">
+      <button class="icon-btn off" id="btnBack" aria-label="上一题">←</button>
+      <div class="qcount"><b id="qNow">01</b> / 12</div>
+    </div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="qbody" id="qbody">
+      <div class="qtag" id="qtag">SITUATION 01</div>
+      <h2 class="qtext" id="qtext"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+    <div class="qfoot">凭直觉，别纠结</div>
+  </section>
+
+  <!-- DEVELOPING -->
+  <section id="s-dev" class="screen">
+    <div class="frame">
+      <div class="perf t"></div><div class="perf b"></div>
+      <div class="img"></div><div class="scan"></div>
+    </div>
+    <div class="dev-pct"><i id="devNum">0</i><span>%</span></div>
+    <div class="dev-step" id="devStep">倾入显影液…</div>
+    <div class="dev-cap">DEVELOPING</div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="s-result" class="screen">
+    <div class="eyebrow">显影结果 · Your Print</div>
+    <div class="r-head">
+      <div class="r-en" id="rEn"></div>
+      <h2 class="r-name" id="rName"></h2>
+      <div class="r-tag" id="rTag"></div>
+    </div>
+    <p class="desc" id="rDesc"></p>
+    <div class="trigger"><em>隐藏开关</em><p id="rTrig"></p></div>
+    <div class="ab-title">能力显影值</div>
+    <div id="abs"></div>
+    <div class="kws" id="kws"></div>
+    <div class="clarity"><span>显影清晰度</span><b id="rClarity"></b></div>
+    <div class="btn-row">
+      <button class="btn" id="btnShare">生成卡片</button>
+      <button class="btn ghost" id="btnAgain">再洗一张</button>
+    </div>
+    <div class="r-no" id="rNo"></div>
+  </section>
+
+</div>
+
+<div id="toast"></div>
+<div id="modal"><div class="mbox">
+  <img id="mImg" alt="结果卡片" />
+  <div class="mhint">长按图片保存到相册 · 或点击下方保存</div>
+  <div class="mbtns">
+    <button class="btn" id="mSave">保存图片</button>
+    <button class="btn ghost" id="mCopy">复制文案</button>
+  </div>
+  <button class="btn ghost" id="mClose" style="margin-top:10px">关闭</button>
+</div></div>
+
+<script>
+/* ========== 数据 ========== */
+var TYPES = [
+  { key:'insight', name:'洞察者', en:'Insight', color:'#7CA8C9',
+    tag:'在别人看到热闹的地方，你看到结构',
+    desc:'你对信息有一种近乎本能的穿透力——别人还在读表面，你已经摸到底下那根线了。你习惯追问「为什么是这样」，也常常是第一个发现哪里不对劲的人。这份才能的麻烦在于：你太早看穿，反而懒得解释。',
+    trig:'当你被允许只给结论、不必解释推导过程时，你的判断最准。',
+    ab:[['结构拆解',92],['动机识别',78],['模式联想',85],['表达说服',61]],
+    kw:['一针见血','先于结论','读人','慢热'] },
+
+  { key:'empathy', name:'共鸣者', en:'Empathy', color:'#DE8E7E',
+    tag:'你先感受到人，再处理事',
+    desc:'你像一台调得很准的接收器——别人的语气、停顿、没说出口的那半句，你都收得到。你天然会照顾场子的温度，也因此被信任。要小心的是：你太容易把别人的情绪背到自己身上。',
+    trig:'当对方不再需要你表现得坚强时，你反而能把事情谈得最深。',
+    ab:[['情绪感知',94],['关系维护',88],['冲突化解',76],['边界守卫',58]],
+    kw:['情绪雷达','被信任','会接话','容易心累'] },
+
+  { key:'structure', name:'建构者', en:'Structure', color:'#86B99C',
+    tag:'把一堆散的东西，搭成能站住的',
+    desc:'你有一种把混乱变成秩序的本能。别人看到的是一堆事，你看到的是层级、依赖和先后顺序。你的价值常常在完成时才被看见，但真正让事情不塌的，往往是你。别让结构本身变成目的。',
+    trig:'当一切都还乱着、没有人负责的时候，你会自动接管。',
+    ab:[['系统搭建',91],['流程优化',86],['风险预判',79],['即兴应变',55]],
+    kw:['可靠','会拆事','清单控','怕失控'] },
+
+  { key:'disrupt', name:'破局者', en:'Disruption', color:'#D2705A',
+    tag:'在大家都绕着走的地方，你想试试踹一脚',
+    desc:'你对「一直都是这么做的」这件事过敏。僵局里你总能闻到那条没人走过的缝，而且你敢先迈出去。你的风险是：新鲜感一过，你就不太想收拾自己掀起来的摊子。',
+    trig:'当局面被所有人判定为「没办法了」的那一刻，你会突然清醒。',
+    ab:[['非常规突破',90],['快速试错',84],['风险承担',81],['持续深耕',54]],
+    kw:['反常识','敢下手','开局强','收尾弱'] },
+
+  { key:'imagine', name:'造梦者', en:'Imagination', color:'#A38FCB',
+    tag:'你脑子里有个不熄灯的放映厅',
+    desc:'你能从一个词、一束光，长出整片画面。别人还在讨论可行性，你已经看见那个东西做完的样子了。你最怕的不是做不好，而是被要求「现实一点」。找到一个能把你的画面落地的人，你会非常可怕。',
+    trig:'当你被允许先不做、只是去想，最好的东西才会来。',
+    ab:[['意象生成',95],['叙事构建',87],['审美判断',83],['落地执行',57]],
+    kw:['画面感','联想乱飞','灵感体质','拖延'] },
+
+  { key:'execute', name:'笃行者', en:'Execution', color:'#C6AE7C',
+    tag:'你说要交，就一定交得出来',
+    desc:'你最被低估的才能，是「不让它停在想法上」。别人的灵感常常死在第三天，你能把它一路拖到完成。你对承诺有一种近乎固执的尊重。注意别让自己变成只拉车、不看路的人。',
+    trig:'当别人都已经放下，而你还在，你才真正开始。',
+    ab:[['持续推进',93],['细节交付',89],['抗压耐力',85],['方向选择',60]],
+    kw:['靠谱','耐力','不拖延','容易过劳'] }
+];
+
+/* 12 题 × 4 选项；每种类型在全部选项位中恰好出现 8 次 */
+var Q = [
+  { q:'周末的聚会进行到一半，你发现自己已经在——', o:[
+    {t:1,x:'把一直没说话的那个人拉进话题里'},
+    {t:3,x:'觉得太闷了，随口提个新玩法把场子搅活'},
+    {t:0,x:'观察谁和谁之间气氛微妙，谁其实被冷落了'},
+    {t:2,x:'默默盘算散场怎么安排，谁送谁、账怎么结'}]},
+
+  { q:'给你一个完全陌生的领域，三天后要交初步方案，你会——', o:[
+    {t:4,x:'先闭眼想它最理想的模样，从终局往回推'},
+    {t:2,x:'把要搞懂的事拆成清单，按顺序啃'},
+    {t:5,x:'找最笨但最稳的办法，先做完一版'},
+    {t:3,x:'直接找里面最反常识的那个点下手'}]},
+
+  { q:'深夜里你最容易滑进去的状态是——', o:[
+    {t:0,x:'把白天想不通的事翻来覆去地想，直到想通'},
+    {t:4,x:'脑海里自动开始放画面和故事，停不下来'},
+    {t:1,x:'回想今天说过的话，有没有哪句说重了'},
+    {t:5,x:'列明天的清单，列完才睡得着'}]},
+
+  { q:'团队里有个明显的漏洞，但没人提，你会——', o:[
+    {t:2,x:'把它补进流程里，让它以后不再发生'},
+    {t:0,x:'先弄清楚这个漏洞背后真正的原因'},
+    {t:5,x:'自己动手先补，能补多少补多少'},
+    {t:1,x:'先想谁会因此受伤，先安抚人'}]},
+
+  { q:'如果突然多出一整段空白时间，你最想——', o:[
+    {t:3,x:'去做一件一直不敢做的、有点冒险的事'},
+    {t:1,x:'约一个很久没见的人好好聊一次'},
+    {t:4,x:'什么都不干，让脑子里随便长东西'},
+    {t:2,x:'把一直堆着没整理的资料、房间、清单收拾掉'}]},
+
+  { q:'别人夸你时，你最常听到的那句是——', o:[
+    {t:5,x:'「交给你的事，从来不用催」'},
+    {t:3,x:'「你胆子真大，这种事也敢试」'},
+    {t:0,x:'「你怎么一眼就看出问题在哪」'},
+    {t:4,x:'「你这想法也太有意思了」'}]},
+
+  { q:'看到一条所有人都在转的消息，你的第一反应是——', o:[
+    {t:2,x:'顺手把它归到某个类别里存好'},
+    {t:1,x:'先看它让谁开心、让谁难受'},
+    {t:3,x:'先怀疑一下：真的吗？'},
+    {t:0,x:'去找原始出处，和它没说的那部分'}]},
+
+  { q:'做一个长期项目，中途最让你难受的是——', o:[
+    {t:5,x:'进度停在那儿，明明再推一把就过去了'},
+    {t:4,x:'做着做着发现它不美了，没了那个画面'},
+    {t:2,x:'结构乱了，后面每一步都在打补丁'},
+    {t:3,x:'一直在重复，没有任何新的刺激'}]},
+
+  { q:'你手机里最舍不得删的东西大多是——', o:[
+    {t:1,x:'某个人发来的一段话、一条语音'},
+    {t:5,x:'自己写过的计划和打卡记录'},
+    {t:4,x:'随手拍下的光、天空、奇怪的角落'},
+    {t:0,x:'当时想通某件事时记下的几行字'}]},
+
+  { q:'和意见完全不同的人合作，你会——', o:[
+    {t:5,x:'先把能达成一致的部分做完'},
+    {t:2,x:'把分歧拆成具体条目，一条一条谈'},
+    {t:1,x:'先聊聊他为什么这么想，再谈事'},
+    {t:0,x:'找出双方真正的分歧到底在哪一层'}]},
+
+  { q:'如果要给十年后的自己留一句话，你会写——', o:[
+    {t:4,x:'别忘了你曾经想成为的那种人'},
+    {t:3,x:'别活得太安全'},
+    {t:1,x:'别忘了那些陪你走过的人'},
+    {t:2,x:'你搭过的东西，比你得到的评价重要'}]},
+
+  { q:'一个难题卡了很久，最后让你解开的往往是——', o:[
+    {t:0,x:'忽然看清它其实是个伪问题'},
+    {t:4,x:'一个完全不相关的东西给了我灵感'},
+    {t:5,x:'我一直没放弃，磨到最后它松了'},
+    {t:3,x:'我换了个没人走过的方向试试'}]}
+];
+
+/* ========== 状态 ========== */
+var idx = 0, answers = [], locked = false, cur = null;
+var $ = function(s){ return document.querySelector(s); };
+var MK = ['A','B','C','D'];
+
+function show(id){
+  var ss = document.querySelectorAll('.screen');
+  for (var i=0;i<ss.length;i++) ss[i].classList.remove('on');
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+function toast(msg){
+  var t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._tm); t._tm = setTimeout(function(){ t.classList.remove('on'); }, 2200);
+}
+
+/* ========== 答题 ========== */
+function render(){
+  var item = Q[idx];
+  $('#qNow').textContent = ('0'+(idx+1)).slice(-2);
+  $('#qtag').textContent = 'SITUATION ' + ('0'+(idx+1)).slice(-2);
+  $('#fill').style.width = (idx / Q.length * 100) + '%';
+  $('#btnBack').classList.toggle('off', idx === 0);
+  $('#qtext').textContent = item.q;
+
+  var box = $('#opts'); box.innerHTML = '';
+  item.o.forEach(function(op, i){
+    var b = document.createElement('button');
+    b.className = 'opt'; b.type = 'button';
+    b.innerHTML = '<span class="mk">'+MK[i]+'</span><span>'+op.x+'</span>';
+    b.addEventListener('click', function(){ pick(i, b); });
+    box.appendChild(b);
+  });
+  var body = $('#qbody');
+  body.style.animation = 'none'; void body.offsetWidth;
+  body.style.animation = 'slideIn .42s cubic-bezier(.2,.8,.28,1) both';
+  locked = false;
+}
+
+function pick(i, el){
+  if (locked) return; locked = true;
+  answers[idx] = Q[idx].o[i].t;
+  el.classList.add('sel');
+  setTimeout(function(){
+    $('#fill').style.width = ((idx+1) / Q.length * 100) + '%';
+    if (idx < Q.length - 1) { idx++; render(); }
+    else { develop(); }
+  }, 260);
+}
+
+$('#btnStart').addEventListener('click', function(){ idx=0; answers=[]; render(); show('s-quiz'); });
+$('#btnBack').addEventListener('click', function(){
+  if (idx === 0 || locked) return;
+  idx--; answers.length = idx; render();
+});
+document.addEventListener('keydown', function(e){
+  if (!$('#s-quiz').classList.contains('on')) return;
+  var n = parseInt(e.key, 10);
+  var list = document.querySelectorAll('#opts .opt');
+  if (n >= 1 && n <= list.length) list[n-1].click();
+});
+
+/* ========== 显影动画 ========== */
+var STEPS = ['倾入显影液…','轮廓开始浮现…','比对 6 种底片…','定影，停住这一刻'];
+function develop(){
+  show('s-dev');
+  var num = $('#devNum'), step = $('#devStep');
+  var t0 = performance.now(), dur = 1850;
+  num.textContent = '0'; step.textContent = STEPS[0];
+  (function tick(now){
+    var p = Math.min(1, (now - t0) / dur);
+    num.textContent = Math.round(p * 100);
+    var s = Math.min(STEPS.length - 1, Math.floor(p * STEPS.length));
+    if (step.textContent !== STEPS[s]) step.textContent = STEPS[s];
+    if (p < 1) requestAnimationFrame(tick);
+    else setTimeout(function(){ finish(); show('s-result'); }, 180);
+  })(t0);
+}
+
+/* ========== 结果 ========== */
+function finish(){
+  var sc = [0,0,0,0,0,0];
+  for (var i=0;i<answers.length;i++) sc[answers[i]]++;
+  var best = 0;
+  for (var i=1;i<6;i++) if (sc[i] > sc[best]) best = i;
+  var second = 0, sMax = 0;
+  for (var i=0;i<6;i++) if (i !== best && sc[i] > sMax) { sMax = sc[i]; second = i; }
+  var clarity = Math.round(58 + 41 * ((sc[best] - sMax) / Math.max(1, sc[best])));
+  clarity = Math.max(58, Math.min(99, clarity));
+
+  var t = TYPES[best];
+  cur = { t: t, clarity: clarity };
+  document.documentElement.style.setProperty('--accent', t.color);
+  document.documentElement.style.setProperty('--glow', t.color + '66');
+
+  $('#rEn').textContent = t.en;
+  $('#rName').textContent = t.name;
+  $('#rTag').textContent = t.tag;
+  $('#rDesc').textContent = t.desc;
+  $('#rTrig').textContent = t.trig;
+  $('#rClarity').textContent = clarity + '%';
+  $('#rNo').textContent = 'PRINT NO. HT-' + (1200 + Math.floor(Math.random()*8700));
+
+  var abs = $('#abs'); abs.innerHTML = '';
+  t.ab.forEach(function(a, i){
+    var d = document.createElement('div'); d.className = 'ab';
+    d.innerHTML = '<div class="ab-top"><span class="ab-name">'+a[0]+'</span>'+
+                  '<span class="ab-val" data-v="'+a[1]+'">0%</span></div>'+
+                  '<div class="ab-track"><div class="ab-fill" data-w="'+a[1]+'"></div></div>';
+    abs.appendChild(d);
+  });
+  var kws = $('#kws'); kws.innerHTML = '';
+  t.kw.forEach(function(k){
+    var s = document.createElement('span'); s.className = 'kw'; s.textContent = k; kws.appendChild(s);
+  });
+
+  requestAnimationFrame(function(){
+    var fills = abs.querySelectorAll('.ab-fill');
+    for (var i=0;i<fills.length;i++) (function(i){
+      var f = fills[i];
+      setTimeout(function(){ f.style.width = f.getAttribute('data-w') + '%'; }, 120 + i * 130);
+      var v = f.parentNode.parentNode.querySelector('.ab-val');
+      var target = parseInt(v.getAttribute('data-v'), 10), st = performance.now() + i * 130;
+      (function run(now){
+        var p = Math.min(1, Math.max(0, (now - st) / 900));
+        v.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + '%';
+        if (p < 1) requestAnimationFrame(run);
+      })(performance.now());
+    })(i);
+  });
+}
+
+/* ========== 分享卡片 ========== */
+function wrap(ctx, text, maxW){
+  var line = '', out = [];
+  for (var i=0;i<text.length;i++){
+    if (ctx.measureText(line + text[i]).width > maxW && line) { out.push(line); line = text[i]; }
+    else line += text[i];
+  }
+  if (line) out.push(line);
+  return out;
+}
+function buildCard(){
+  var t = cur.t, W = 750, H = 1334, dpr = 2;
+  var c = document.createElement('canvas');
+  c.width = W * dpr; c.height = H * dpr;
+  var x = c.getContext('2d'); x.scale(dpr, dpr);
+  var SF = '"Songti SC","Source Han Serif SC","Noto Serif SC","STSong","SimSun",serif';
+  var SS = '-apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+
+  x.fillStyle = '#0A0D14'; x.fillRect(0,0,W,H);
+  var g = x.createRadialGradient(620,60,20,620,60,520);
+  g.addColorStop(0,'rgba(239,170,99,.26)'); g.addColorStop(1,'rgba(239,170,99,0)');
+  x.fillStyle = g; x.fillRect(0,0,W,H);
+  var g2 = x.createRadialGradient(80,1250,20,80,1250,480);
+  g2.addColorStop(0,'rgba(127,184,201,.16)'); g2.addColorStop(1,'rgba(127,184,201,0)');
+  x.fillStyle = g2; x.fillRect(0,0,W,H);
+
+  // 齿孔边
+  x.fillStyle = 'rgba(239,170,99,.42)';
+  for (var i=24;i<W-24;i+=42){ x.beginPath(); x.arc(i, 26, 5, 0, 6.3); x.fill();
+    x.beginPath(); x.arc(i, H-26, 5, 0, 6.3); x.fill(); }
+
+  x.textAlign = 'center';
+  x.fillStyle = '#EFAA63'; x.font = '600 20px '+SS;
+  x.letterSpacing && (x.letterSpacing = '8px');
+  x.fillText('HIDDEN TALENT', W/2, 132);
+  x.letterSpacing && (x.letterSpacing = '0px');
+  x.fillStyle = 'rgba(242,239,231,.42)'; x.font = '22px '+SS;
+  x.fillText('暗 房 显 影 · 你 的 隐 藏 才 能', W/2, 172);
+
+  x.strokeStyle = 'rgba(242,239,231,.14)'; x.lineWidth = 1;
+  x.beginPath(); x.moveTo(80,214); x.lineTo(W-80,214); x.stroke();
+
+  x.fillStyle = t.color; x.font = '600 96px '+SF;
+  x.fillText(t.name, W/2, 380);
+  x.fillStyle = 'rgba(242,239,231,.55)'; x.font = 'italic 30px '+SF;
+  var tl = wrap(x, t.tag, W-150);
+  tl.forEach(function(l, i){ x.fillText(l, W/2, 444 + i*46); });
+
+  var y = 470 + tl.length*46 + 34;
+  x.textAlign = 'left';
+  x.fillStyle = 'rgba(242,239,231,.80)'; x.font = '27px '+SS;
+  wrap(x, t.desc, W-160).forEach(function(l){ x.fillText(l, 80, y); y += 46; });
+
+  y += 30;
+  x.fillStyle = t.color; x.fillRect(80, y-22, 3, 96);
+  x.fillStyle = 'rgba(242,239,231,.62)'; x.font = '25px '+SS;
+  wrap(x, '隐藏开关：' + t.trig, W-190).forEach(function(l){ x.fillText(l, 104, y); y += 40; });
+
+  y += 46;
+  x.fillStyle = 'rgba(242,239,231,.38)'; x.font = '600 20px '+SS;
+  x.fillText('能力显影值', 80, y);
+  y += 34;
+  t.ab.forEach(function(a){
+    x.fillStyle = 'rgba(242,239,231,.86)'; x.font = '26px '+SS;
+    x.fillText(a[0], 80, y);
+    x.textAlign = 'right';
+    x.fillStyle = t.color; x.font = '600 26px '+SF;
+    x.fillText(a[1] + '%', W-80, y);
+    x.textAlign = 'left';
+    x.fillStyle = 'rgba(242,239,231,.10)'; x.fillRect(80, y+16, W-160, 8);
+    var bw = (W-160) * a[1] / 100;
+    var lg = x.createLinearGradient(80, 0, 80+bw, 0);
+    lg.addColorStop(0, 'rgba(255,213,166,.5)'); lg.addColorStop(1, t.color);
+    x.fillStyle = lg; x.fillRect(80, y+16, bw, 8);
+    y += 62;
+  });
+
+  y += 18;
+  var cx = 80;
+  t.kw.forEach(function(k){
+    x.font = '25px '+SS;
+    var w = x.measureText(k).width + 44;
+    if (cx + w > W - 80) { cx = 80; y += 62; }
+    x.strokeStyle = 'rgba(242,239,231,.24)'; x.lineWidth = 1;
+    x.beginPath();
+    if (x.roundRect) { x.roundRect(cx, y-30, w, 48, 24); } else { x.rect(cx, y-30, w, 48); }
+    x.stroke();
+    x.fillStyle = 'rgba(242,239,231,.72)'; x.textAlign = 'center';
+    x.fillText(k, cx + w/2, y + 2);
+    x.textAlign = 'left';
+    cx += w + 14;
+  });
+
+  y += 60;
+  x.strokeStyle = 'rgba(242,239,231,.12)';
+  x.beginPath(); x.moveTo(80, y); x.lineTo(W-80, y); x.stroke();
+  x.textAlign = 'center';
+  x.fillStyle = 'rgba(242,239,231,.34)'; x.font = '22px '+SS;
+  x.fillText('显影清晰度 ' + cur.clarity + '%', W/2, y + 46);
+  x.fillStyle = 'rgba(239,170,99,.72)'; x.font = '600 20px '+SS;
+  x.fillText('你 的 那 张 底 片 · 也 来 洗 一 张', W/2, y + 88);
+
+  return c.toDataURL('image/png');
+}
+
+function shareText(){
+  return '【你的隐藏才能】我的显影结果是「' + cur.t.name + '」——' + cur.t.tag +
+         '\n关键词：' + cur.t.kw.join(' / ') +
+         '\n来洗出你的那张底片。';
+}
+function copyText(){
+  var s = shareText();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(s).then(function(){ toast('文案已复制，去粘贴给朋友'); },
+      function(){ fallbackCopy(s); });
+  } else fallbackCopy(s);
+}
+function fallbackCopy(s){
+  var ta = document.createElement('textarea'); ta.value = s;
+  ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+  ta.select(); try { document.execCommand('copy'); toast('文案已复制'); } catch(e){ toast('复制失败，请手动选择'); }
+  document.body.removeChild(ta);
+}
+
+$('#btnShare').addEventListener('click', function(){
+  var url = buildCard();
+  $('#mImg').src = url; $('#mImg').dataset.url = url;
+  $('#modal').classList.add('on');
+});
+$('#mSave').addEventListener('click', function(){
+  var a = document.createElement('a');
+  a.href = $('#mImg').dataset.url;
+  a.download = '我的隐藏才能-' + cur.t.name + '.png';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('已保存到下载');
+});
+$('#mCopy').addEventListener('click', copyText);
+$('#mClose').addEventListener('click', function(){ $('#modal').classList.remove('on'); });
+$('#modal').addEventListener('click', function(e){ if (e.target.id === 'modal') $('#modal').classList.remove('on'); });
+
+$('#btnAgain').addEventListener('click', function(){
+  idx = 0; answers = []; render(); show('s-quiz');
+});
+</script>
+</body>
+</html>
