@@ -62,22 +62,77 @@ body{
   background:linear-gradient(180deg,rgba(239,170,99,.05),rgba(10,13,20,.6));
   padding:20px 18px;margin-bottom:30px;overflow:hidden;
 }
+/* 齿孔带：胶片持续走动 */
 .plate .perf{position:absolute;left:0;right:0;height:9px;
   background-image:radial-gradient(circle at 6px 50%, rgba(239,170,99,.5) 0 2.2px, transparent 2.4px);
-  background-size:16px 9px;}
-.plate .perf.t{top:0}.plate .perf.b{bottom:0}
-.plate-in{position:relative;border:1px dashed rgba(239,170,99,.20);border-radius:2px;padding:30px 16px;text-align:center}
-.safelight{width:92px;height:92px;margin:0 auto 20px;border-radius:50%;
+  background-size:16px 9px;
+  animation:transport 3.4s linear infinite;}
+.plate .perf.b{animation-direction:reverse}
+@keyframes transport{from{background-position:0 0}to{background-position:16px 0}}
+
+/* 显影液：缓慢漂移的药水光团 */
+.chem{position:absolute;border-radius:50%;pointer-events:none;mix-blend-mode:screen}
+.chem.c1{width:130px;height:130px;left:-16%;top:8%;filter:blur(20px);
+  background:radial-gradient(circle,rgba(239,170,99,.34),rgba(239,170,99,0) 68%);
+  animation:drift1 11s ease-in-out infinite}
+.chem.c2{width:160px;height:160px;right:-24%;bottom:-14%;filter:blur(24px);
+  background:radial-gradient(circle,rgba(127,184,201,.26),rgba(127,184,201,0) 70%);
+  animation:drift2 14s ease-in-out infinite}
+.chem.c3{width:92px;height:92px;left:54%;top:-12%;filter:blur(18px);
+  background:radial-gradient(circle,rgba(255,213,166,.24),rgba(255,213,166,0) 70%);
+  animation:drift3 9s ease-in-out infinite}
+@keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(26px,18px,0) scale(1.14)}}
+@keyframes drift2{0%,100%{transform:translate3d(0,0,0) scale(1.06)}50%{transform:translate3d(-30px,-16px,0) scale(.92)}}
+@keyframes drift3{0%,100%{transform:translate3d(0,0,0) scale(.9)}50%{transform:translate3d(-18px,26px,0) scale(1.18)}}
+
+/* 安全灯光带：周期性扫过相纸 */
+.plate .sweep{position:absolute;top:-30%;left:-45%;width:38%;height:160%;pointer-events:none;
+  transform:rotate(12deg);
+  background:linear-gradient(90deg,rgba(239,170,99,0),rgba(255,213,166,.14),rgba(239,170,99,0));
+  animation:sweep 5.6s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes sweep{0%{left:-45%}58%{left:108%}100%{left:108%}}
+
+.plate-in{position:relative;border:1px dashed rgba(239,170,99,.20);border-radius:2px;padding:30px 16px;text-align:center;overflow:hidden}
+.safelight{position:relative;width:92px;height:92px;margin:0 auto 20px;border-radius:50%;
   background:radial-gradient(circle at 50% 50%, rgba(255,213,166,.85), rgba(239,170,99,.28) 45%, rgba(239,170,99,0) 72%);
   animation:breathe 4.2s ease-in-out infinite;}
+.safelight::after{content:"";position:absolute;inset:-22px;border-radius:50%;
+  border:1px solid rgba(239,170,99,.30);animation:ring 3.6s ease-out infinite}
+@keyframes ring{0%{transform:scale(.82);opacity:.7}70%{transform:scale(1.24);opacity:0}100%{transform:scale(1.24);opacity:0}}
 @keyframes breathe{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.06);opacity:1}}
-.plate-cap{font-size:11px;letter-spacing:.22em;color:var(--faint);line-height:1.9}
 
+/* 银盐微尘 */
+.dust{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.dust i{position:absolute;bottom:-8px;border-radius:50%;opacity:0;
+  background:rgba(255,213,166,.9);box-shadow:0 0 7px rgba(239,170,99,.75);
+  animation-name:rise;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes rise{
+  0%{transform:translate3d(0,0,0) scale(.6);opacity:0}
+  14%{opacity:.95}
+  75%{opacity:.5}
+  100%{transform:translate3d(var(--dx),-168px,0) scale(1);opacity:0}
+}
+.plate-cap{position:relative;font-size:11px;letter-spacing:.22em;color:var(--faint);line-height:1.9}
+
+/* 标题逐字显影 */
 h1.title{
   font-family:var(--serif);font-weight:600;font-size:40px;line-height:1.22;margin:0 0 14px;
   letter-spacing:.02em;
 }
-.title em{font-style:normal;color:var(--amber)}
+.title span{display:inline-block;will-change:filter,opacity}
+.title span.hi{color:var(--amber)}
+#s-home.anim .title span{opacity:0;filter:blur(10px);
+  animation:emerge .95s cubic-bezier(.2,.8,.28,1) forwards;
+  animation-delay:calc(var(--i) * .085s + .12s)}
+@keyframes emerge{
+  0%{opacity:0;filter:blur(10px);transform:translateY(7px)}
+  55%{opacity:1}
+  100%{opacity:1;filter:blur(0);transform:none}
+}
+/* 内容分层上浮 */
+#s-home.anim .rise{opacity:0;animation:riseIn .72s cubic-bezier(.2,.8,.28,1) forwards;animation-delay:var(--d)}
+@keyframes riseIn{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
+
 .lede{font-size:14.5px;line-height:1.85;color:var(--dim);margin:0 0 22px}
 .meta{display:flex;gap:0;margin:0 0 34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .meta div{flex:1;padding:13px 0;text-align:center;border-right:1px solid var(--line)}
@@ -86,6 +141,7 @@ h1.title{
 .meta span{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.14em;color:var(--faint)}
 
 .btn{
+  position:relative;overflow:hidden;
   display:block;width:100%;border:0;border-radius:2px;cursor:pointer;
   font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:.06em;
   padding:17px 20px;color:#191308;
@@ -93,6 +149,11 @@ h1.title{
   box-shadow:0 10px 30px -12px rgba(239,170,99,.75);
   transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease;
 }
+.btn:not(.ghost)::after{content:"";position:absolute;top:0;bottom:0;left:-45%;width:34%;pointer-events:none;
+  transform:skewX(-12deg);
+  background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.45),rgba(255,255,255,0));
+  animation:shimmer 4.2s ease-in-out infinite;animation-delay:1.4s}
+@keyframes shimmer{0%{left:-45%}58%{left:118%}100%{left:118%}}
 .btn:active{transform:translateY(2px) scale(.99);box-shadow:0 6px 18px -12px rgba(239,170,99,.6)}
 .btn.ghost{background:transparent;color:var(--dim);border:1px solid rgba(242,239,231,.18);box-shadow:none}
 .btn.ghost:active{background:rgba(242,239,231,.05)}
@@ -204,6 +265,9 @@ h1.title{
 .mbtns{display:flex;gap:10px}
 .mbtns .btn{padding:13px;font-size:13px}
 @media (min-width:520px){ .app{padding-top:26px} }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 </style>
 </head>
 <body>
@@ -212,24 +276,27 @@ h1.title{
 <div class="app">
 
   <!-- HOME -->
-  <section id="s-home" class="screen on">
+  <section id="s-home" class="screen on anim">
     <div class="plate">
       <div class="perf t"></div><div class="perf b"></div>
+      <div class="chem c1"></div><div class="chem c2"></div><div class="chem c3"></div>
+      <div class="sweep"></div>
       <div class="plate-in">
+        <div class="dust" id="dust"></div>
         <div class="safelight"></div>
         <div class="plate-cap">LATENT&nbsp;IMAGE<br/>未显影的底片</div>
       </div>
     </div>
-    <div class="eyebrow">Hidden Talent · 暗房显影</div>
-    <h1 class="title">你的<em>隐藏</em>才能</h1>
-    <p class="lede">有些才能一直没被认出来，不是因为它不存在，<br/>而是它还没遇到对的显影液。<br/>12 道情境题，把它从底片上洗出来。</p>
-    <div class="meta">
+    <div class="eyebrow rise" style="--d:.42s">Hidden Talent · 暗房显影</div>
+    <h1 class="title" id="title">你的<em>隐藏</em>才能</h1>
+    <p class="lede rise" style="--d:.56s">有些才能一直没被认出来，不是因为它不存在，<br/>而是它还没遇到对的显影液。<br/>12 道情境题，把它从底片上洗出来。</p>
+    <div class="meta rise" style="--d:.70s">
       <div><b>12</b><span>情境题</span></div>
       <div><b>2′</b><span>约需时长</span></div>
       <div><b>6</b><span>种底片</span></div>
     </div>
-    <button class="btn" id="btnStart">开始显影</button>
-    <p class="note">没有标准答案，凭第一直觉选<br/>答案仅在你的设备上处理</p>
+    <button class="btn rise" style="--d:.84s" id="btnStart">开始显影</button>
+    <p class="note rise" style="--d:.98s">没有标准答案，凭第一直觉选<br/>答案仅在你的设备上处理</p>
   </section>
 
   <!-- QUIZ -->
@@ -428,6 +495,42 @@ function toast(msg){
   var t = $('#toast'); t.textContent = msg; t.classList.add('on');
   clearTimeout(t._tm); t._tm = setTimeout(function(){ t.classList.remove('on'); }, 2200);
 }
+
+/* ========== 首页动效 ========== */
+/* 标题拆成单字，逐字「显影」 */
+(function splitTitle(){
+  var t = $('#title'), out = '', k = 0;
+  Array.prototype.forEach.call(t.childNodes, function(n){
+    var hi = (n.nodeName === 'EM');
+    var s = (n.nodeType === 3) ? n.nodeValue : n.textContent;
+    for (var j=0;j<s.length;j++){
+      out += '<span class="'+(hi?'hi':'')+'" style="--i:'+(k++)+'">'+s.charAt(j)+'</span>';
+    }
+  });
+  t.innerHTML = out;
+})();
+
+/* 银盐微尘：位置 / 大小 / 时长 / 延迟全部错开，避免同步感 */
+(function seedDust(){
+  var box = $('#dust'), html = '', N = 16;
+  for (var i=0;i<N;i++){
+    var left = (i * 6.37 + 4) % 96 + 2;
+    var size = 1.6 + (i % 3) * 0.9;
+    var dur  = 7.4 + (i % 5) * 1.7;
+    var del  = (i * 0.73) % 8;
+    var dx   = ((i % 7) - 3) * 10;
+    html += '<i style="left:'+left.toFixed(1)+'%;width:'+size.toFixed(1)+'px;height:'+size.toFixed(1)+
+            'px;--dx:'+dx+'px;animation-duration:'+dur.toFixed(1)+'s;animation-delay:'+del.toFixed(2)+'s"></i>';
+  }
+  box.innerHTML = html;
+})();
+
+/* 重播首页进场动画（移除 class + 强制重排 + 再加） */
+function playHome(){
+  var h = $('#s-home');
+  h.classList.remove('anim'); void h.offsetWidth; h.classList.add('anim');
+}
+playHome();
 
 /* ========== 答题 ========== */
 function render(){
@@ -686,7 +789,8 @@ $('#mClose').addEventListener('click', function(){ $('#modal').classList.remove(
 $('#modal').addEventListener('click', function(e){ if (e.target.id === 'modal') $('#modal').classList.remove('on'); });
 
 $('#btnAgain').addEventListener('click', function(){
-  idx = 0; answers = []; render(); show('s-quiz');
+  idx = 0; answers = [];
+  show('s-home'); playHome();
 });
 </script>
 </body>
