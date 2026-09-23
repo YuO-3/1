@@ -41,7 +41,7 @@ body{
 .vignette{position:fixed;inset:0;z-index:98;pointer-events:none;
   background:radial-gradient(120% 80% at 50% 40%, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 100%);}
 
-.app{position:relative;z-index:2;width:100%;max-width:440px;margin:0 auto;padding:0 22px 44px;min-height:100dvh;display:flex;flex-direction:column}
+.app{position:relative;z-index:2;width:100%;max-width:440px;margin:0 auto;padding:0 24px 40px;min-height:100dvh;display:flex;flex-direction:column}
 .screen{display:none;flex:1;flex-direction:column;padding-top:30px}
 .screen.on{display:flex;animation:enter .55s cubic-bezier(.2,.8,.28,1) both}
 @keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -50,17 +50,18 @@ body{
 /* ---------- shared bits ---------- */
 .eyebrow{
   font-size:10px;letter-spacing:.30em;text-transform:uppercase;color:var(--amber);
-  display:flex;align-items:center;gap:9px;margin-bottom:16px;
+  display:flex;align-items:center;gap:9px;margin-bottom:14px;
 }
 .eyebrow::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(239,170,99,.55),rgba(239,170,99,0))}
-.rule{height:1px;background:linear-gradient(90deg,rgba(242,239,231,.22),rgba(242,239,231,0));margin:22px 0}
 
 /* ---------- home ---------- */
-#s-home{justify-content:center;padding-top:0}
+#s-home{justify-content:center;padding-top:6px}
+
+/* 相纸框 */
 .plate{
   position:relative;border:1px solid rgba(239,170,99,.28);border-radius:4px;
   background:linear-gradient(180deg,rgba(239,170,99,.05),rgba(10,13,20,.6));
-  padding:20px 18px;margin-bottom:30px;overflow:hidden;
+  padding:16px;margin-bottom:26px;overflow:hidden;
 }
 /* 齿孔带：胶片持续走动 */
 .plate .perf{position:absolute;left:0;right:0;height:9px;
@@ -72,13 +73,13 @@ body{
 
 /* 显影液：缓慢漂移的药水光团 */
 .chem{position:absolute;border-radius:50%;pointer-events:none;mix-blend-mode:screen}
-.chem.c1{width:130px;height:130px;left:-16%;top:8%;filter:blur(20px);
+.chem.c1{width:120px;height:120px;left:-16%;top:6%;filter:blur(20px);
   background:radial-gradient(circle,rgba(239,170,99,.34),rgba(239,170,99,0) 68%);
   animation:drift1 11s ease-in-out infinite}
-.chem.c2{width:160px;height:160px;right:-24%;bottom:-14%;filter:blur(24px);
+.chem.c2{width:150px;height:150px;right:-24%;bottom:-16%;filter:blur(24px);
   background:radial-gradient(circle,rgba(127,184,201,.26),rgba(127,184,201,0) 70%);
   animation:drift2 14s ease-in-out infinite}
-.chem.c3{width:92px;height:92px;left:54%;top:-12%;filter:blur(18px);
+.chem.c3{width:86px;height:86px;left:54%;top:-14%;filter:blur(18px);
   background:radial-gradient(circle,rgba(255,213,166,.24),rgba(255,213,166,0) 70%);
   animation:drift3 9s ease-in-out infinite}
 @keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(26px,18px,0) scale(1.14)}}
@@ -92,11 +93,11 @@ body{
   animation:sweep 5.6s cubic-bezier(.45,0,.55,1) infinite}
 @keyframes sweep{0%{left:-45%}58%{left:108%}100%{left:108%}}
 
-.plate-in{position:relative;border:1px dashed rgba(239,170,99,.20);border-radius:2px;padding:30px 16px;text-align:center;overflow:hidden}
-.safelight{position:relative;width:92px;height:92px;margin:0 auto 20px;border-radius:50%;
+.plate-in{position:relative;border:1px dashed rgba(239,170,99,.20);border-radius:2px;padding:24px 14px;text-align:center;overflow:hidden}
+.safelight{position:relative;width:80px;height:80px;margin:0 auto 16px;border-radius:50%;
   background:radial-gradient(circle at 50% 50%, rgba(255,213,166,.85), rgba(239,170,99,.28) 45%, rgba(239,170,99,0) 72%);
   animation:breathe 4.2s ease-in-out infinite;}
-.safelight::after{content:"";position:absolute;inset:-22px;border-radius:50%;
+.safelight::after{content:"";position:absolute;inset:-20px;border-radius:50%;
   border:1px solid rgba(239,170,99,.30);animation:ring 3.6s ease-out infinite}
 @keyframes ring{0%{transform:scale(.82);opacity:.7}70%{transform:scale(1.24);opacity:0}100%{transform:scale(1.24);opacity:0}}
 @keyframes breathe{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.06);opacity:1}}
@@ -110,30 +111,41 @@ body{
   0%{transform:translate3d(0,0,0) scale(.6);opacity:0}
   14%{opacity:.95}
   75%{opacity:.5}
-  100%{transform:translate3d(var(--dx),-168px,0) scale(1);opacity:0}
+  100%{transform:translate3d(var(--dx),-150px,0) scale(1);opacity:0}
 }
-.plate-cap{position:relative;font-size:11px;letter-spacing:.22em;color:var(--faint);line-height:1.9}
+.plate-cap{position:relative;font-size:10.5px;letter-spacing:.20em;color:var(--faint);line-height:1.9}
 
-/* 标题逐字显影 */
+/* 标题：整体一个文本节点，逐字只做 opacity + 位移，不加 blur（避免逐字栅格化导致字形破碎） */
 h1.title{
-  font-family:var(--serif);font-weight:600;font-size:40px;line-height:1.22;margin:0 0 14px;
-  letter-spacing:.02em;
+  position:relative;
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(32px,8.8vw,40px);
+  line-height:1.26;margin:0 0 14px;letter-spacing:.01em;
 }
-.title span{display:inline-block;will-change:filter,opacity}
+.title span{display:inline-block}
 .title span.hi{color:var(--amber)}
-#s-home.anim .title span{opacity:0;filter:blur(10px);
-  animation:emerge .95s cubic-bezier(.2,.8,.28,1) forwards;
-  animation-delay:calc(var(--i) * .085s + .12s)}
-@keyframes emerge{
-  0%{opacity:0;filter:blur(10px);transform:translateY(7px)}
-  55%{opacity:1}
-  100%{opacity:1;filter:blur(0);transform:none}
+#s-home.anim .title span{
+  opacity:0;
+  animation:emerge .8s cubic-bezier(.2,.8,.28,1) forwards;
+  animation-delay:calc(var(--i) * .07s + .14s);
 }
+@keyframes emerge{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+/* 标题上的一道显影扫光（独立图层，不参与文字栅格化） */
+.title .shine{position:absolute;left:-8px;right:-8px;top:0;bottom:0;pointer-events:none;
+  background:linear-gradient(100deg,rgba(255,213,166,0) 38%,rgba(255,213,166,.26) 50%,rgba(255,213,166,0) 62%);
+  opacity:0}
+#s-home.anim .title .shine{animation:shine 1.15s cubic-bezier(.4,0,.5,1) .1s both}
+@keyframes shine{0%{transform:translateX(-70%);opacity:0}25%{opacity:1}100%{transform:translateX(70%);opacity:0}}
+
+/* 标题下的短刻度线 */
+.tick{width:34px;height:2px;margin:0 0 18px;
+  background:linear-gradient(90deg,var(--amber),rgba(239,170,99,0));border-radius:2px}
+
 /* 内容分层上浮 */
 #s-home.anim .rise{opacity:0;animation:riseIn .72s cubic-bezier(.2,.8,.28,1) forwards;animation-delay:var(--d)}
 @keyframes riseIn{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
 
-.lede{font-size:14.5px;line-height:1.85;color:var(--dim);margin:0 0 30px}
+.lede{font-size:clamp(13.5px,3.8vw,15px);line-height:1.92;color:var(--dim);margin:0 0 30px}
 
 .btn{
   position:relative;overflow:hidden;
@@ -154,7 +166,7 @@ h1.title{
 .btn.ghost:active{background:rgba(242,239,231,.05)}
 .btn-row{display:flex;gap:12px;margin-top:26px}
 .btn-row .btn{flex:1}
-.note{font-size:11.5px;color:var(--faint);text-align:center;margin-top:18px;line-height:1.7}
+.note{font-size:11.5px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.7}
 
 /* ---------- quiz ---------- */
 .qtop{display:flex;align-items:center;gap:14px;margin-bottom:14px}
@@ -284,11 +296,12 @@ h1.title{
         <div class="plate-cap">LATENT&nbsp;IMAGE<br/>未显影的底片</div>
       </div>
     </div>
-    <div class="eyebrow rise" style="--d:.42s">Hidden Talent · 暗房显影</div>
-    <h1 class="title" id="title">你的<em>隐藏</em>才能</h1>
-    <p class="lede rise" style="--d:.56s">有些才能一直没被认出来，不是因为它不存在，<br/>而是它还没遇到对的显影液。<br/>来，把它从底片上洗出来。</p>
-    <button class="btn rise" style="--d:.72s" id="btnStart">开始显影</button>
-    <p class="note rise" style="--d:.86s">没有标准答案，凭第一直觉选<br/>答案仅在你的设备上处理</p>
+    <div class="eyebrow rise" style="--d:.34s">Hidden Talent · 暗房显影</div>
+    <h1 class="title" id="title">你的<em>隐藏</em>才能<i class="shine"></i></h1>
+    <div class="tick rise" style="--d:.52s"></div>
+    <p class="lede rise" style="--d:.62s">有些才能一直没被认出来，不是因为它不存在，<br/>而是它还没遇到对的显影液。<br/>来，把它从底片上洗出来。</p>
+    <button class="btn rise" style="--d:.78s" id="btnStart">开始显影</button>
+    <p class="note rise" style="--d:.92s">没有标准答案，凭第一直觉选<br/>答案仅在你的设备上处理</p>
   </section>
 
   <!-- QUIZ -->
@@ -493,17 +506,23 @@ function toast(msg){
 }
 
 /* ========== 首页动效 ========== */
-/* 标题拆成单字，逐字「显影」 */
+/* 标题拆成单字：只对 opacity / transform 做动画，
+   不使用 filter:blur —— 逐字模糊会让每个汉字单独栅格化，
+   在部分 Windows 渲染环境下出现字形破碎（看起来像乱码）。 */
 (function splitTitle(){
-  var t = $('#title'), out = '', k = 0;
+  var t = $('#title');
+  var shine = t.querySelector('.shine');
+  var out = '', k = 0;
   Array.prototype.forEach.call(t.childNodes, function(n){
+    if (n === shine || n.nodeType !== 1 && n.nodeType !== 3) return;
+    if (n.nodeType === 1 && n.nodeName === 'I') return;
     var hi = (n.nodeName === 'EM');
     var s = (n.nodeType === 3) ? n.nodeValue : n.textContent;
     for (var j=0;j<s.length;j++){
       out += '<span class="'+(hi?'hi':'')+'" style="--i:'+(k++)+'">'+s.charAt(j)+'</span>';
     }
   });
-  t.innerHTML = out;
+  t.innerHTML = out + (shine ? '<i class="shine"></i>' : '');
 })();
 
 /* 银盐微尘：位置 / 大小 / 时长 / 延迟全部错开，避免同步感 */
